@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { fetchCourses, publishCourse } from "../api";
 
 interface Course {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  is_published: boolean;
+  published: boolean;
 }
 
 const CourseList: React.FC = () => {
@@ -14,8 +14,8 @@ const CourseList: React.FC = () => {
   useEffect(() => {
     const loadCourses = async () => {
       try {
-        const response = await fetchCourses();
-        setCourses(response.data);
+        const data = await fetchCourses();
+        setCourses(data);
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
@@ -23,9 +23,9 @@ const CourseList: React.FC = () => {
     loadCourses();
   }, []);
 
-  const handlePublish = async (courseId: string) => {
+  const handlePublish = async (courseId: number) => { // ✅ Ensure it's a number
     try {
-      await publishCourse(courseId);
+      await publishCourse(courseId); // ✅ Correctly passes a number
       setCourses((prevCourses) =>
         prevCourses.map((course) =>
           course.id === courseId ? { ...course, is_published: true } : course
@@ -35,31 +35,34 @@ const CourseList: React.FC = () => {
       console.error("Error publishing course:", error);
     }
   };
-
+  
   return (
     <div className="container mt-4">
-      <h2>Courses</h2>
+      <h2>Available Courses</h2>
       <ul className="list-group">
-        {courses.map((course) => (
-          <li key={course.id} className="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-              <h5>{course.name}</h5>
-              <p>{course.description}</p>
-              <span className={`badge ${course.is_published ? "bg-success" : "bg-secondary"}`}>
-                {course.is_published ? "Published" : "Draft"}
-              </span>
-            </div>
-            {!course.is_published && (
-              <button className="btn btn-primary" onClick={() => handlePublish(course.id)}>
-                Publish
-              </button>
-            )}
-          </li>
-        ))}
+        {courses.length > 0 ? (
+          courses.map((course) => (
+            <li key={course.id} className="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <h5>{course.name}</h5>
+                <p>{course.description}</p>
+                <span className={`badge ${course.published ? "bg-success" : "bg-secondary"}`}>
+                  {course.published ? "Published" : "Draft"}
+                </span>
+              </div>
+              {!course.published && (
+                <button className="btn btn-primary" onClick={() => handlePublish(course.id)}>
+                  Publish
+                </button>
+              )}
+            </li>
+          ))
+        ) : (
+          <p className="text-muted">No courses available.</p>
+        )}
       </ul>
     </div>
   );
 };
 
 export default CourseList;
-export {};

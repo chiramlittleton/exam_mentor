@@ -18,3 +18,12 @@ pub async fn create_course_handler(
         Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to create course: {}", e))),
     }
 }
+
+pub async fn get_courses_handler(State(pool): State<PgPool>) -> Json<Vec<Course>> {
+    let courses = sqlx::query_as!(Course, "SELECT id, name, description FROM courses")
+        .fetch_all(&pool)
+        .await
+        .expect("Failed to fetch courses");
+
+    Json(courses)
+}
