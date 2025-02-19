@@ -23,3 +23,10 @@ pub struct SeedQuestion {
     pub chapter_id: i32, // Foreign key reference
     pub question: String,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct QuestionResponse {
+    pub question: String,
+    pub answers: Vec<String>,      // ✅ List of possible answers
+    pub correct_answer: String,    // ✅ The correct answer as provided by AI
+}

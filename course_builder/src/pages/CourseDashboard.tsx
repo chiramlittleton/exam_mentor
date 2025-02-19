@@ -2,7 +2,7 @@ import React from "react";
 import CourseForm from "../components/CourseForm";
 import CourseList from "../components/CourseList";
 
-const Dashboard: React.FC = () => {
+const CourseDashboard: React.FC = () => {
   return (
     <div className="container mt-5">
       <h1 className="text-primary">Course Builder</h1>
@@ -14,4 +14,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default CourseDashboard;
