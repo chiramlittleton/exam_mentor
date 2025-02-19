@@ -74,16 +74,18 @@ graph TD
 
 ---
 
-### **3️⃣ Model Service (Python)**
-- **RAG Workflow**
-  1. **Retrieve relevant course content** from the vector database.
-  2. **Generate new questions** based on user progress.
-  3. **Return AI-generated multiple-choice questions.**
+3️⃣ Model Service (Python)
+Retrieval-Augmented Generation (RAG) Workflow
+The RAG approach ensures that dynamically generated questions are accurate and contextually relevant by leveraging a vector database to retrieve domain-specific knowledge before generating a response.
 
-- **Vector Database**
-  - Stores structured course content and knowledge.
-  - Provides relevant data to enhance question generation.
+Retrieve relevant course content → The system searches the vector database for the most relevant text passages based on the course topic and the student's progress.
+Generate new questions → The retrieved content is fed into the model, which formulates multiple-choice questions tailored to the learner's skill level.
+Return AI-generated multiple-choice questions → The backend delivers a structured question with plausible answer choices, ensuring an adaptive and engaging learning experience.
+Vector Database
 
+Stores structured course content, seed questions, and relevant knowledge snippets for different domains.
+Ensures the LLM generates factually correct and context-aware questions by providing high-quality context before question generation.
+Enhances adaptability by allowing fine-tuning based on course-specific data, making each course unique to its subject matter.
 ---
 
 ## **Future Enhancements**
