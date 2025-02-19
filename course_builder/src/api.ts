@@ -25,8 +25,8 @@ export const publishCourse = async (courseId: number) => {
   return true; // Indicate success
 };
 
-export const fetchGeneratedQuestion = (courseId: string) => {
-  return axios.get(`${API_BASE_URL}/generate_question/${courseId}`);
+export const fetchGeneratedQuestion = (courseId: number) => {
+  return axios.get(`${API_BASE_URL}/courses/${courseId}/question`);
 };
 
 export {};

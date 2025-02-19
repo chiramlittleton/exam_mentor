@@ -19,7 +19,7 @@ const CoursePage: React.FC = () => {
   const loadQuestion = async () => {
     try {
       setLoading(true);
-      const response = await fetchGeneratedQuestion(courseId!);
+      const response = await fetchGeneratedQuestion(parseInt(courseId!));
       setQuestionData(response.data);
       setSelectedAnswer(null);
       setIsCorrect(null);
