@@ -6,7 +6,7 @@
 
 ## 📽️ Demo Video
 
-🎥 **Watch the demo video**: [Download Exam Mentor Demo](assets/exam.mov)
+🎥 **Watch the demo video**: [Exam Mentor Demo on Vimeo](https://vimeo.com/1058291487)
 
 ---
 
