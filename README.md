@@ -82,7 +82,3 @@ graph TD
 - ✅ **Fine-Tuning Option** → Allow clients to train their own models.
 - ✅ **Adaptive Learning Model** → Dynamically adjust difficulty based on user performance.
 - ✅ **Support for More Question Formats** → Add image-based, video-based, and open-ended questions.
-
----
-
-This **README.md** provides an overview of the **Exam Mentor** system. Let me know if you want any refinements before we start coding! 🚀
