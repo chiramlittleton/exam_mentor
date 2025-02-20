@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: exam_mentor_db
+    restart: always
+    environment:
+      POSTGRES_USER: exam_mentor
+      POSTGRES_PASSWORD: exam_mentor
+      POSTGRES_DB: exam_mentor
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    image: chiramlittleton/exam_mentor_backend
+    container_name: exam_mentor_backend
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgres://exam_mentor:exam_mentor@postgres:5432/exam_mentor"
+    ports:
+      - "4000:4000"
+    restart: always
+
+  question_forge:
+    image: chiramlittleton/question_forge
+    container_name: question_forge
+    depends_on:
+      - backend
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}  # Use .env file or manually set
+    ports:
+      - "5000:5000"
+    restart: always
+
+  course_builder:
+    image: chiramlittleton/course_builder
+    container_name: course_builder
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    restart: always
+
+volumes:
+  postgres_data:
