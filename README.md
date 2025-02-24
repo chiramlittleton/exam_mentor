@@ -121,15 +121,17 @@ graph TD
 
 ---
 
-### **2️⃣ Backend (Rust)**
+### **2️⃣ Backend (Go)**
 - **Endpoints**
-  - `/courses` → Manage courses.
-  - `/chapters` → Organize chapters.
-  - `/generate_question/{course_id}` → Fetch dynamically generated questions.
+  - `/courses` → Manage courses (handled in `handlers/courses.go`).
+  - `/chapters` → Organize chapters (handled in `handlers/chapters.go`).
+  - `/questions/{chapter_id}` → Retrieve stored questions for a given chapter (handled in `handlers/questions.go`).
+  - `/generate_question/{course_id}` → Fetch dynamically generated questions from the AI model.
 
 - **Database (PostgreSQL)**
-  - Stores courses, chapters, and seed questions.
-  - Tracks student progress.
+  - Defined in `db/schema.sql` and managed via `db/db.go`.
+  - Stores **courses**, **chapters**, and **seed questions**.
+  - Tracks **student progress**, including completed questions and accuracy rates.
 
 ---
 
