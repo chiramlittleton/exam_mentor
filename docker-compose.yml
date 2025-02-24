@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:15
@@ -16,15 +14,15 @@ services:
     command: ["/bin/sh", "-c", "mkdir -p /root/db && docker-entrypoint.sh postgres"]
 
   go-backend:
-    image: go-backend
+    build:
+      context: ./go-backend
+      dockerfile: Dockerfile
+    image: "${DOCKER_USERNAME}/go-backend:latest"
     container_name: go-backend
     depends_on:
       - postgres
-      - question_forge
     environment:
       DATABASE_URL: "postgres://exam_mentor:exam_mentor@postgres:5432/exam_mentor?sslmode=disable"
-      QUESTION_FORGE_URL: "http://question_forge:5000"
-      MODEL_SERVICE_URL: "http://model_service:6000"
     ports:
       - "4000:4000"
     restart: always
