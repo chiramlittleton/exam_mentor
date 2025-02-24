@@ -98,7 +98,7 @@ Exam Mentor consists of four main components:
 ```mermaid
 graph TD
   A[Student/Course Creator] -->|Requests| B(Frontend: React)
-  B -->|API Calls| C(Rust Backend)
+  B -->|API Calls| C(Go Backend)
   C -->|Stores Data| D(PostgreSQL)
   C -->|Sends AI Requests| E(Model Service: Python)
   E -->|Fetches Context| F(Vector Database)
