@@ -1,6 +1,3 @@
-x-variables:
-  DOCKER_NAMESPACE: &DOCKER_NAMESPACE chiramlittleton
-
 services:
   postgres:
     image: postgres:15
@@ -20,7 +17,7 @@ services:
     build:
       context: ./go-backend
       dockerfile: Dockerfile
-    image: "${DOCKER_NAMESPACE}/go-backend:latest"
+    image: "chiramlittleton/go-backend:latest"
     container_name: go-backend
     depends_on:
       - postgres
@@ -37,7 +34,7 @@ services:
     build:
       context: ./question_forge
       dockerfile: Dockerfile
-    image: "${DOCKER_NAMESPACE}/question_forge:latest"
+    image: "chiramlittleton/question_forge:latest"
     container_name: question_forge
     depends_on:
       - model_service
@@ -51,7 +48,7 @@ services:
     build:
       context: ./model_service
       dockerfile: Dockerfile
-    image: "${DOCKER_NAMESPACE}/model_service:latest"
+    image: "chiramlittleton/model_service:latest"
     container_name: model_service
     ports:
       - "6000:6000"
@@ -61,7 +58,7 @@ services:
     build:
       context: ./course_builder
       dockerfile: Dockerfile
-    image: "${DOCKER_NAMESPACE}/course_builder:latest"  
+    image: "chiramlittleton/course_builder:latest"  
     container_name: course_builder
     depends_on:
       - go-backend

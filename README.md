@@ -1,12 +1,62 @@
 # **Exam Mentor**
 
-**Exam Mentor** is an adaptive learning platform that dynamically generates questions tailored to a student's progress. It supports multiple domains, allowing course creators to define structured courses while leveraging AI-generated content. test
+**Exam Mentor** is an adaptive learning platform that allows **course administrators to create custom courses** using their own data. Students can then enroll in these courses, where they receive dynamically generated questions tailored to their progress. The platform leverages AI to generate content based on the course structure, ensuring an adaptive and personalized learning experience.
+
+To enhance question generation, **Exam Mentor** utilizes **Retrieval-Augmented Generation (RAG)**, which retrieves relevant course materials from a **vector database** before generating questions. This ensures that AI-generated content is accurate, contextually relevant, and aligned with the specific course curriculum.
+
+
+### **1️⃣ Welcome Screen**
+![Welcome Screen](docs/images/welcome_screen.png)
+- This is the **landing page** where users choose their role.
+- Users can select between:
+  - **Course Admin** → To create and manage courses.
+  - **Student** → To enroll in courses and start learning.
 
 ---
 
-## 📽️ Demo Video
+### **2️⃣ Course Builder Dashboard (For Course Admins)**
+![Course Builder](docs/images/course_builder.png)
+- Displays a list of **existing courses**.
+- Allows admins to **create new courses** by entering:
+  - Course Name
+  - Course Description
+- Clicking on a course navigates to the **Course Editor**.
 
-🎥 **Watch the demo video**: [Exam Mentor Demo on Vimeo](https://vimeo.com/1058291487)
+---
+
+### **3️⃣ Course Editor (For Course Admins)**
+![Course Editor](docs/images/course_editor.png)
+- Displays the **selected course’s chapters**.
+- Admins can:
+  - **Add new chapters**.
+  - **Add AI-generated questions** under each chapter.
+- AI-generated questions are automatically retrieved from the **Model Service**.
+
+---
+
+### **4️⃣ Student Dashboard**
+![Student Dashboard](docs/images/student_dashboard.png)
+- Displays a list of **available courses**.
+- Students can **select a course** to begin learning.
+- Clicking on a course navigates to the **Course Chapters** view.
+
+---
+
+### **5️⃣ Course Chapters (For Students)**
+![Course Chapters](docs/images/course_chapters.png)
+- Displays a list of **chapters within a selected course**.
+- Students can **select a chapter** to begin answering questions.
+- Clicking "Start" navigates to the **Quiz Screen**.
+
+---
+
+### **6️⃣ Quiz Screen**
+![Quiz Screen](docs/images/quiz_screen.png)
+- Presents **AI-generated multiple-choice questions** for the selected chapter.
+- Students can:
+  - **Select an answer**.
+  - **Move to the next question** or **finish the quiz**.
+- Questions are dynamically generated based on **Retrieval-Augmented Generation (RAG)**.
 
 ---
 
@@ -89,43 +139,38 @@ The **RAG** approach ensures that dynamically generated questions are accurate a
 
 ## **🔧 Setup and Installation**
 
-To run Exam Mentor, you need to set up the necessary dependencies for the frontend, backend, and model service. The project includes a **Makefile** to automate the installation and startup process.
+### **Prerequisites**
+Ensure you have the following installed on your system:
+- **Docker & Docker Compose** → Install via [docker.com](https://www.docker.com/)
+- **(Optional) Rust, Node.js, Python** → Only needed if running services manually
+
+---
+## **🔧 Setup and Installation**
 
 ### **Prerequisites**
 Ensure you have the following installed on your system:
-- **Rust** (for the backend) → Install via [rustup.rs](https://rustup.rs/)
-- **Node.js & Yarn** (for the frontend) → Install via [nodejs.org](https://nodejs.org/)
-- **Python 3** and **pip** (for the model service) → Install via [python.org](https://www.python.org/)
-- **PostgreSQL** (for the database) → Install via [postgresql.org](https://www.postgresql.org/)
-
-### **Installation Steps**
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/chiramlittleton/exam_mentor.git
-   cd exam_mentor
-
-2. Set up the environment variables:
-   ```sh
-   cp .env.example .env
-
-3. Install dependencies and initialize the project:
-   ```sh
-   make install
-
-## 🚀 Running the Application
-
-You can start all services using the Makefile by running:
-
-make run
-
-
-This will start the Rust backend, the React frontend, the Python model service, and ensure PostgreSQL is running. If you prefer to run each service manually, navigate to each component’s directory and start it individually. To start the backend, run `cd backend && cargo run`. To start the frontend, run `cd frontend && yarn start`. To start the model service, activate the virtual environment and run `uvicorn app:app --host 127.0.0.1 --port 5000 --reload` from the `question_forge` directory.
-
-⚠️ **Known Issues**: The Makefile is not fully functional yet. The installation process currently requires manual Python virtual environment setup and PostgreSQL configuration. Database migrations must also be run manually. If the database is not set up properly, run `make migrate`. Python dependencies must be installed in a virtual environment. If `make install` fails, manually create and activate a virtual environment using `python3 -m venv venv`, then activate it with `source venv/bin/activate` and install dependencies with `pip install -r requirements.txt`.
-
-These issues will be addressed in future updates.
+- **Docker & Docker Compose** → Install via [docker.com](https://www.docker.com/)
+- **(Optional) Rust, Node.js, Python** → Only needed if running services manually
 
 ---
+
+## **🚀 Quick Start (Mac/Linux) – Run Without Cloning**
+Run the following command to **download and start Exam Mentor without cloning the repository**.
+
+```sh
+# 1️⃣ Create a new directory for the project
+mkdir exam_mentor && cd exam_mentor
+
+# 2️⃣ Download the latest docker-compose.yml and .env file
+curl -O https://raw.githubusercontent.com/chiramlittleton/exam_mentor/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/chiramlittleton/exam_mentor/main/.env
+
+# 3️⃣ Prompt for OpenAI API key and add it to the .env file (Mac/Linux)
+bash -c 'read -r -p "Enter your OpenAI API Key: " key; echo "OPENAI_API_KEY=$key" >> .env'
+
+# 4️⃣ Start all services using Docker Compose
+docker-compose up -d
+```
 ## **Future Enhancements**
 - ✅ **Fine-Tuning Option** → Allow clients to train their own models.
 - ✅ **Adaptive Learning Model** → Dynamically adjust difficulty based on user performance.
