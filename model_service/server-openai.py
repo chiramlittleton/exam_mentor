@@ -8,7 +8,7 @@ import os
 app = FastAPI()
 
 # Set OpenAI API key (replace with your token directly or load it from environment variables)
-openai.api_key = os.getenv("OPENAI_API_KEY", "insert-key")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Define request and response models
 class QuestionRequest(BaseModel):

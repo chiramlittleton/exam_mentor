@@ -31,7 +31,7 @@ services:
     image: question_forge  # ✅ Using locally built image
     container_name: question_forge
     depends_on:
-      - postgres
+      - model_service
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     ports:
@@ -39,13 +39,13 @@ services:
     restart: always
 
   model_service:
-    image: model_service  # ✅ Using locally built image
+    build:
+      context: ./model_service
+      dockerfile: Dockerfile
+    image: "${DOCKER_USERNAME}/model_service:latest"
     container_name: model_service
-    depends_on:
-      - go-backend
     ports:
       - "6000:6000"
-      - "8000:8000"
     restart: always
 
   course_builder:

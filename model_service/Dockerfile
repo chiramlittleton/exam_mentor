@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Step 6: Expose the port the app will run on
-EXPOSE 8000
+EXPOSE 6000
 
 # Step 7: Run the FastAPI app using Uvicorn
-CMD ["uvicorn", "server-openai:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "server-openai:app", "--host", "0.0.0.0", "--port", "6000"]
