@@ -1,106 +1,39 @@
-# ===========================
-# Exam Mentor - Full Makefile
-# ===========================
+# Default target
+.DEFAULT_GOAL := run
 
-# 📂 Directories
-BACKEND_DIR=backend
-FRONTEND_DIR=course_builder
-QUESTION_FORGE_DIR=question_forge
-MODEL_SERVICE_DIR=model_service
-VENV=$(QUESTION_FORGE_DIR)/venv
+# Define .env file location
+ENV_FILE := .env
 
-# 🛠️ Detect the correct Python & Pip
-PYTHON := $(shell command -v python3 || command -v python)
-PIP := $(VENV)/bin/pip
+# Check if .env exists, if not, create it
+env:
+	@if [ ! -f $(ENV_FILE) ]; then \
+		echo "🔧 Setting up environment variables..."; \
+		echo "DOCKER_NAMESPACE=chiramlittleton" > $(ENV_FILE); \
+		echo "OPENAI_API_KEY=" >> $(ENV_FILE); \
+		echo "✅ .env file created. Please enter your OpenAI API key."; \
+	fi
 
-# =========================================================
-# 🚀 GLOBAL SETUP
-# =========================================================
-.PHONY: setup
-setup: backend-install frontend-install question-forge-install
-	@echo "✅ Exam Mentor setup complete!"
+	@# Check if OPENAI_API_KEY is missing and prompt for input
+	@if ! grep -q "OPENAI_API_KEY=" $(ENV_FILE) || [ -z "$$(grep "OPENAI_API_KEY=" $(ENV_FILE) | cut -d '=' -f2)" ]; then \
+		echo "🔑 Please enter your OpenAI API key:"; \
+		read key; \
+		sed -i.bak "/OPENAI_API_KEY=/c\OPENAI_API_KEY=$$key" $(ENV_FILE); \
+		rm -f $(ENV_FILE).bak; \
+		echo "✅ API key added to .env."; \
+	fi
 
-# =========================================================
-# 🦀 RUST BACKEND COMMANDS
-# =========================================================
-.PHONY: backend-install
-backend-install:
-	@echo "🦀 Installing Rust dependencies..."
-	cd $(BACKEND_DIR) && cargo build
+# Pull images, run Docker Compose with the .env file
+run: env
+	@echo "🚀 Starting containers..."
+	@docker-compose --env-file $(ENV_FILE) pull
+	@docker-compose --env-file $(ENV_FILE) up -d
 
-.PHONY: backend-run
-backend-run:
-	@echo "🦀 Starting Rust backend..."
-	cd $(BACKEND_DIR) && cargo run
+# Stop all containers
+stop:
+	@echo "🛑 Stopping containers..."
+	@docker-compose down
 
-# =========================================================
-# 🎨 FRONTEND COMMANDS
-# =========================================================
-.PHONY: frontend-install
-frontend-install:
-	@echo "🎨 Installing frontend dependencies..."
-	cd $(FRONTEND_DIR) && yarn install
-
-.PHONY: frontend-run
-frontend-run:
-	@echo "🎨 Starting frontend..."
-	cd $(FRONTEND_DIR) && yarn start
-
-# =========================================================
-# 🔥 QUESTION FORGE (Python AI Service)
-# =========================================================
-.PHONY: question-forge-venv
-question-forge-venv:
-	@echo "🐍 Setting up Python virtual environment..."
-	@if [ ! -d "$(VENV)" ]; then cd $(QUESTION_FORGE_DIR) && $(PYTHON) -m venv venv; fi
-
-.PHONY: question-forge-install
-question-forge-install: question-forge-venv
-	@echo "🐍 Installing Question Forge dependencies..."
-	cd $(QUESTION_FORGE_DIR) && $(VENV)/bin/python -m pip install --upgrade pip && $(PIP) install -r requirements.txt
-
-.PHONY: question-forge-run
-question-forge-run:
-	@echo "🤖 Starting Question Forge (AI Service)..."
-	cd $(QUESTION_FORGE_DIR) && $(VENV)/bin/uvicorn app:app --host 127.0.0.1 --port 5000 --reload
-
-# =========================================================
-# 📚 MODEL SERVICE (Optional Future Component)
-# =========================================================
-.PHONY: model-service-install
-model-service-install:
-	@echo "📚 Installing Model Service dependencies..."
-	cd $(MODEL_SERVICE_DIR) && pip install -r requirements.txt
-
-.PHONY: model-service-run
-model-service-run:
-	@echo "📚 Starting Model Service..."
-	cd $(MODEL_SERVICE_DIR) && uvicorn app:app --host 127.0.0.1 --port 5001 --reload
-
-# =========================================================
-# 🚀 RUN EVERYTHING (Full System)
-# =========================================================
-.PHONY: run-all
-run-all:
-	@echo "🚀 Starting all services..."
-	@make -j3 backend-run frontend-run question-forge-run
-
-# =========================================================
-# 🛑 STOP EVERYTHING (Future use)
-# =========================================================
-.PHONY: stop-all
-stop-all:
-	@echo "🛑 Stopping all services..."
-	@pkill -f "cargo run" || true
-	@pkill -f "yarn start" || true
-	@pkill -f "uvicorn app:app" || true
-
-# =========================================================
-# ✅ CLEANUP & RESET
-# =========================================================
-.PHONY: clean
-clean:
-	@echo "🧹 Cleaning up..."
-	rm -rf $(BACKEND_DIR)/target
-	rm -rf $(FRONTEND_DIR)/node_modules
-	rm -rf $(VENV)
+# Clean up containers, images, and volumes
+clean: stop
+	@echo "🧹 Cleaning up Docker images and volumes..."
+	@docker system prune -af

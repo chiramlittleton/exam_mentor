@@ -25,7 +25,7 @@ async def options_handler():
     return Response(status_code=200)
 
 # ✅ Set Model Service URL
-MODEL_SERVICE_URL = os.getenv("MODEL_SERVICE_URL", "http://127.0.0.1:6000/generate")
+MODEL_SERVICE_URL = os.getenv("MODEL_SERVICE_URL", "http://localhost:6000/generate")
 
 class QuestionRequest(BaseModel):
     question: str

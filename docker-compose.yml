@@ -31,6 +31,9 @@ services:
     restart: always
 
   question_forge:
+    environment:
+      MODEL_SERVICE_URL: "http://model_service:6000/generate"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     build:
       context: ./question_forge
       dockerfile: Dockerfile
@@ -38,13 +41,13 @@ services:
     container_name: question_forge
     depends_on:
       - model_service
-    environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
     ports:
       - "5001:5000"
     restart: always
 
   model_service:
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     build:
       context: ./model_service
       dockerfile: Dockerfile
