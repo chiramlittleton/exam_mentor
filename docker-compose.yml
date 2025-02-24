@@ -49,7 +49,10 @@ services:
     restart: always
 
   course_builder:
-    image: course_builder  # ✅ Using locally built image
+    build:
+      context: ./course_builder
+      dockerfile: Dockerfile
+    image: "${DOCKER_USERNAME}/course_builder:latest"  
     container_name: course_builder
     depends_on:
       - go-backend

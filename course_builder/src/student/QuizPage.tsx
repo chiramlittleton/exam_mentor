@@ -25,7 +25,7 @@ const QuizPage: React.FC = () => {
       newSeed = seedQuestions[Math.floor(Math.random() * seedQuestions.length)];
     } while (usedSeeds.has(newSeed) && usedSeeds.size < seedQuestions.length);
 
-    setUsedSeeds(new Set([...usedSeeds, newSeed]));
+    setUsedSeeds(new Set([...Array.from(usedSeeds), newSeed]));
 
     try {
       const response = await fetchGeneratedQuestion(newSeed);
@@ -79,7 +79,7 @@ const QuizPage: React.FC = () => {
                     : "white")
                 }
                 onClick={() => handleAnswerSelect(answer)}
-                disabled={isCorrect} // Allow retrying until correct
+                disabled={isCorrect ?? undefined} 
               >
                 {answer}
               </button>
@@ -120,14 +120,14 @@ const QuizPage: React.FC = () => {
 const styles = {
   container: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column" as const,
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
     backgroundColor: "#f8f9fa",
     fontFamily: "'Arial', sans-serif",
     padding: "20px",
-    textAlign: "center",
+    textAlign: "center" as const,
   },
   title: {
     fontSize: "28px",
@@ -155,7 +155,7 @@ const styles = {
     cursor: "pointer",
     transition: "all 0.3s ease",
     width: "100%",
-    textAlign: "center",
+    textAlign: "center" as const,
   },
   feedback: {
     fontSize: "18px",

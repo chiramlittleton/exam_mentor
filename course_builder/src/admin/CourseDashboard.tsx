@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { fetchCourses, createCourse, addChapter, addSeedQuestion, fetchChapters, fetchQuestions } from "../api";
+import {
+  fetchCourses,
+  createCourse,
+  addChapter,
+  addSeedQuestion,
+  fetchChapters,
+  fetchQuestions,
+} from "../api";
 
 interface SeedQuestion {
   id: number;
@@ -40,7 +47,7 @@ const CourseDashboard: React.FC = () => {
 
   const handleSelectCourse = async (course: Course) => {
     const chapters = await fetchChapters(course.id);
-    
+
     const chaptersWithQuestions = await Promise.all(
       chapters.map(async (chapter: Chapter) => {
         const questions = await fetchQuestions(chapter.id);
@@ -53,7 +60,7 @@ const CourseDashboard: React.FC = () => {
 
   const handleAddChapter = async () => {
     if (!newChapter || !selectedCourse) return;
-    const addedChapter: Chapter = await addChapter(selectedCourse.id, newChapter);
+    await addChapter(selectedCourse.id, newChapter);
     const updatedChapters = await fetchChapters(selectedCourse.id);
     setSelectedCourse({ ...selectedCourse, chapters: updatedChapters });
     setNewChapter("");
@@ -79,17 +86,15 @@ const CourseDashboard: React.FC = () => {
 
   const handleCreateCourse = async () => {
     if (!newCourse.name || !newCourse.description) return;
-    const createdCourse: Course = await createCourse({ name: newCourse.name, description: newCourse.description });
-  
+    const createdCourse: Course = await createCourse(newCourse);
     setCourses((prevCourses) => [...prevCourses, createdCourse]);
     setNewCourse({ name: "", description: "" });
   };
-  
+
   return (
     <div style={styles.container}>
       <h1>Course Builder</h1>
 
-      {/* Create a New Course */}
       <div style={styles.form}>
         <input
           type="text"
@@ -108,7 +113,6 @@ const CourseDashboard: React.FC = () => {
         <button onClick={handleCreateCourse} style={styles.button}>Create Course</button>
       </div>
 
-      {/* Select a Course */}
       <h2>Courses</h2>
       <ul style={styles.courseList}>
         {courses.map((course) => (
@@ -120,12 +124,10 @@ const CourseDashboard: React.FC = () => {
         ))}
       </ul>
 
-      {/* Manage Selected Course */}
       {selectedCourse && (
         <div style={styles.section}>
           <h2>Editing: {selectedCourse.name}</h2>
 
-          {/* Add Chapter */}
           <div style={styles.addContainer}>
             <input
               type="text"
@@ -137,12 +139,10 @@ const CourseDashboard: React.FC = () => {
             <button onClick={handleAddChapter} style={styles.button}>Add Chapter</button>
           </div>
 
-          {/* Display Chapters and Add Questions */}
           {selectedCourse.chapters?.map((chapter) => (
             <div key={chapter.id} style={styles.chapterCard}>
               <h3 style={styles.chapterTitle}>{chapter.name}</h3>
 
-              {/* Add Question Input */}
               <div style={styles.addContainer}>
                 <input
                   type="text"
@@ -153,7 +153,6 @@ const CourseDashboard: React.FC = () => {
                 <button onClick={handleAddQuestion} style={styles.buttonSmall}>Add Question</button>
               </div>
 
-              {/* Display Questions */}
               <div style={styles.questionContainer}>
                 {chapter.questions?.map((q) => (
                   <div key={q.id} style={styles.questionItem}>{q.question}</div>
@@ -167,21 +166,13 @@ const CourseDashboard: React.FC = () => {
   );
 };
 
-const styles = {
-  container: { textAlign: "center" as const, marginTop: "50px", padding: "20px" },
+const styles: Record<string, React.CSSProperties> = {
+  container: { textAlign: "center", marginTop: "50px", padding: "20px" },
   form: { marginBottom: "20px" },
   input: { padding: "10px", marginRight: "10px", width: "250px", borderRadius: "5px", border: "1px solid #ccc" },
   button: { padding: "10px 20px", fontSize: "16px", cursor: "pointer", borderRadius: "5px", border: "none", backgroundColor: "#007BFF", color: "white" },
   buttonSmall: { padding: "8px 12px", fontSize: "14px", backgroundColor: "#28A745", color: "white", borderRadius: "5px", border: "none", cursor: "pointer" },
-  courseList: { listStyle: "none", padding: "0" },
-  courseItem: { padding: "10px", borderBottom: "1px solid #ddd" },
-  courseButton: { padding: "10px 20px", fontSize: "16px", backgroundColor: "#007BFF", color: "white", borderRadius: "5px", border: "none", cursor: "pointer" },
-  section: { marginTop: "30px", padding: "20px", borderRadius: "8px", backgroundColor: "#f8f9fa" },
-  chapterCard: { backgroundColor: "white", padding: "15px", margin: "15px 0", borderRadius: "8px", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" },
-  chapterTitle: { fontSize: "18px", fontWeight: "bold", marginBottom: "10px" },
   questionContainer: { maxHeight: "150px", overflowY: "auto", border: "1px solid #ddd", borderRadius: "5px", padding: "10px", backgroundColor: "#f8f9fa" },
-  questionItem: { padding: "5px 0", borderBottom: "1px solid #ddd" },
-  addContainer: { display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px", gap: "10px" },
 };
 
 export default CourseDashboard;
