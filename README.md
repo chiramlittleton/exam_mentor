@@ -62,25 +62,34 @@ To enhance question generation, **Exam Mentor** utilizes **Retrieval-Augmented G
 
 ## **Architecture Overview**
 
-Exam Mentor consists of three main components:
+Exam Mentor consists of four main components:
 
 1. **Frontend (Course Builder & Student Interface)**
    - **Built with:** React (TypeScript)
    - **Purpose:** 
-     - **Course Builder:** Allows course creators to define courses, chapters, and questions.
-     - **Student Interface:** Provides an adaptive learning experience with dynamically generated questions.
+     - **Course Builder:** Allows course administrators to define custom courses using their own data.
+     - **Student Interface:** Provides an adaptive learning experience, dynamically generating questions tailored to the student’s progress.
 
-2. **Backend (Rust)**
-   - **Built with:** Axum, SQLx, PostgreSQL
+2. **Backend (Go)**
+   - **Built with:** Go, PostgreSQL
    - **Purpose:** 
-     - Manages course definitions, tracks student progress, and fetches AI-generated questions.
-     - Provides APIs for both students and course creators.
+     - Manages course definitions, student progress, and API requests from the frontend.
+     - Handles user interactions and ensures seamless integration between the frontend and AI-generated content.
+     - Stores structured course data, student performance metrics, and historical responses.
 
-3. **Model Service (Python)**
-   - **Built with:** FastAPI, LlamaIndex, LangChain
+3. **Question Forge (Python)**
+   - **Built with:** FastAPI
    - **Purpose:** 
-     - Uses **Retrieval-Augmented Generation (RAG)** to fetch relevant context before generating questions.
-     - Leverages a **local LLM** (e.g., Mistral, LLaMA) for fine-tuned question generation.
+     - Generates AI-powered multiple-choice questions and explanations.
+     - Calls the **Model Service** to retrieve relevant content before generating questions.
+     - Supports **adaptive difficulty**, adjusting future questions based on student performance.
+
+4. **Model Service (Python)**
+   - **Built with:** FastAPI, LlamaIndex, LangChain, Vector Database
+   - **Purpose:** 
+     - Uses **Retrieval-Augmented Generation (RAG)** to fetch contextually relevant information before generating questions.
+     - Stores course content embeddings in a **vector database** to improve retrieval accuracy.
+     - Leverages **external LLM APIs (e.g., OpenAI, Mistral, LLaMA)** for high-quality, domain-specific question generation.
 
 ---
 
