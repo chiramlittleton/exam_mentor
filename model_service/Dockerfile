@@ -1,18 +1,20 @@
-# 1️⃣ Use a minimal Python base image
-FROM python:3.11-slim
+# Step 1: Use an official Python base image
+FROM python:3.9-slim
 
-# 2️⃣ Set working directory
+# Step 2: Set the working directory inside the container
 WORKDIR /app
 
-# 3️⃣ Copy dependencies and install them
+# Step 3: Copy the requirements file into the container
 COPY requirements.txt .
+
+# Step 4: Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 4️⃣ Copy all files
+# Step 5: Copy the app code into the container
 COPY . .
 
-# 5️⃣ Expose API port (FastAPI defaults to 8000)
+# Step 6: Expose the port the app will run on
 EXPOSE 8000
 
-# 6️⃣ Run the service
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Step 7: Run the FastAPI app using Uvicorn
+CMD ["uvicorn", "server-openai:app", "--host", "0.0.0.0", "--port", "8000"]

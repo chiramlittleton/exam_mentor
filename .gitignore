@@ -1,1 +1,4 @@
 question_forge/__pycache__/questionforge.cpython-313.pyc
+venv/
+__pycache__/
+.DS_Store

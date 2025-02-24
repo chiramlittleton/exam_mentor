@@ -1,13 +1,31 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from pydantic import BaseModel
-import openai
+import requests
 import random
 import os
+import uvicorn
 
 app = FastAPI()
 
-# ✅ Load OpenAI API key from environment variable
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# ✅ Enable CORS to properly handle OPTIONS requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],  # ✅ Ensure OPTIONS is explicitly allowed
+    allow_headers=["*"],
+)
+
+# ✅ Explicitly Handle OPTIONS Requests for /generate
+@app.options("/generate")
+async def options_handler():
+    """✅ Explicitly handle OPTIONS requests for CORS preflight."""
+    return Response(status_code=200)
+
+# ✅ Set Model Service URL
+MODEL_SERVICE_URL = os.getenv("MODEL_SERVICE_URL", "http://127.0.0.1:6000/generate")
 
 class QuestionRequest(BaseModel):
     question: str
@@ -15,31 +33,31 @@ class QuestionRequest(BaseModel):
 class QuestionResponse(BaseModel):
     question: str
     answers: list[str]
-    correct_answer: str  # ✅ Add correct_answer field
+    correct_answer: str
 
 @app.post("/generate", response_model=QuestionResponse)
 async def generate_answers(request: QuestionRequest):
-    """Generates multiple-choice answers for a given question using OpenAI."""
-
+    """Generates multiple-choice answers for a given question using the Model Service."""
+    
     try:
-        # ✅ Ask OpenAI to generate 4 answer choices (one correct)
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a real estate exam assistant."},
-                {"role": "user", "content": f"Generate 4 multiple-choice answers for this question: '{request.question}'. Make sure exactly one is correct, and list them like this:\n\n1. Correct answer\n2. Wrong answer\n3. Wrong answer\n4. Wrong answer"}
-            ],
-            temperature=0.7
+        # ✅ Call Model Service
+        response = requests.post(
+            MODEL_SERVICE_URL,
+            json={"question": request.question},
+            timeout=5
         )
 
-        # ✅ Extract the response text
-        response_text = response.choices[0].message.content.strip()
-        answer_lines = response_text.split("\n")
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail=f"Model Service error: {response.text}")
 
-        # ✅ Extract correct and incorrect answers
-        answers = [line[3:].strip() for line in answer_lines if line]
-        correct_answer = answers[0]  # ✅ Assume the first answer is correct
-        random.shuffle(answers)  # ✅ Shuffle answers so the correct one isn't always first
+        data = response.json()
+        answers = data.get("answers", [])
+        correct_answer = data.get("correct_answer", "")
+
+        if not answers or not correct_answer:
+            raise HTTPException(status_code=500, detail="Invalid response from Model Service")
+
+        random.shuffle(answers)
 
         return QuestionResponse(
             question=request.question,
@@ -47,5 +65,12 @@ async def generate_answers(request: QuestionRequest):
             correct_answer=correct_answer
         )
 
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reach Model Service: {str(e)}")
+
     except Exception as e:
-        return {"error": f"Failed to generate answers: {str(e)}"}
+        raise HTTPException(status_code=500, detail=f"Failed to generate answers: {str(e)}")
+
+# ✅ Ensure the server binds to IPv4 (`0.0.0.0`)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=5001)
