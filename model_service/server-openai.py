@@ -8,7 +8,7 @@ import os
 app = FastAPI()
 
 # Set OpenAI API key (replace with your token directly or load it from environment variables)
-openai.api_key = os.getenv("OPENAI_API_KEY", "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")
+openai.api_key = os.getenv("OPENAI_API_KEY", "insert-key")
 
 # Define request and response models
 class QuestionRequest(BaseModel):
@@ -28,16 +28,6 @@ async def generate_answers(request: QuestionRequest):
     """Generates multiple-choice answers for a given question using OpenAI."""
 
     try:
-        # Call OpenAI to generate 4 answer choices (one correct)
-        # response = openai.ChatCompletion.create(
-        #     model="gpt-3.5-turbo",
-        #     messages=[
-        #         {"role": "system", "content": "You are a real estate exam assistant."},
-        #         {"role": "user", "content": f"Generate 4 multiple-choice answers for this question: '{request.question}'. Make sure exactly one is correct, and list them like this:\n\n1. Correct answer\n2. Wrong answer\n3. Wrong answer\n4. Wrong answer"}
-        #     ],
-        #     temperature=0.7,
-        #     max_tokens=150
-        # )
 
         response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
