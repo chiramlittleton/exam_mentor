@@ -28,7 +28,10 @@ services:
     restart: always
 
   question_forge:
-    image: question_forge  # ✅ Using locally built image
+    build:
+      context: ./question_forge
+      dockerfile: Dockerfile
+    image: "${DOCKER_USERNAME}/question_forge:latest"
     container_name: question_forge
     depends_on:
       - model_service
